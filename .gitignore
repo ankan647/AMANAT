@@ -19,3 +19,4 @@ frontend/playwright-report/
 *.db-wal
 *.db-shm
 .DS_Store
+backend/*.egg-info/
