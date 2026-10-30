@@ -6,7 +6,20 @@
       block UPDATE/DELETE on audit_log and audit_anchor, SOD DB trigger installed, hash chain
       verifies + genesis prev_hash + strictly increasing seq, JWT/bcrypt auth, permission matrix,
       clock-hygiene grep). `ruff check app tests` clean.
-- [ ] Phase 2: Domain engines
+- [x] Phase 2: Domain engines — `pytest tests/engines` 65 passed (88 total incl. phase 1).
+      Covers: rules_engine (E1 vs E2 by obligation date, exemption, impact-preview non-persistence),
+      coverage (15 hand-checked cases incl. scenario A gap=41 days/shortfall, scenario K gap=57
+      days/expiring_soon, exempt, not_covered, covered, future shortfall beyond window, two
+      overlapping FDRs closing a gap, returned/matured/beneficiary-missing exclusions, boundary
+      issue/maturity dates), confidence (weakest-field grade, accept-only upgrade, institution %),
+      anomalies (all 11 types + no false flags on a clean instrument + never says "fraud"),
+      bank_channel (7-working-day due date, Api/Sfms stubs raise NotImplementedError),
+      reminders/escalation (5 reminder kinds per instrument, fire-exactly-once, pause/resume,
+      link-renewal cancellation), release + SOD (R1/R2/R3 scenarios, admin-cannot-approve,
+      hold-blocks-release, missing-documents-blocks, term-not-complete-blocks), orders/signing
+      (valid signature verifies, tampered payload fails, masked instrument ref, public-payload
+      key allowlist), metrics (precision/recall/officer-confirmed-share on a hand-built planted
+      set). `ruff check app tests` clean.
 - [ ] Phase 3: Seed + API + contract
 - [ ] Phase 4: Frontend foundation
 - [ ] Phase 5: Frontend screens
@@ -39,6 +52,16 @@
 - Alembic migration environment reads `DATABASE_URL` from `app.core.config.get_settings()`
   rather than `alembic.ini`, so one source of truth. `alembic.ini`'s own `sqlalchemy.url` line is
   unused but left at its default per alembic's template.
+
+- Anomaly metrics per-type `precision`/`false_positives` (5.7) are not pinned down exactly by the
+  spec beyond overall precision/recall formulas, so: per type, `detected` = planted instruments of
+  that type with a matching flag, `false_positives` = flags of that type on non-planted
+  instruments, `precision = detected/(detected+false_positives)`, `recall = detected/planted`.
+  Overall `precision`/`recall`/`officer_confirmed_share` follow the spec's literal formulas.
+- Exemption `required_period` end date (for an exempt institution, which never needs a deposit)
+  defaults to `deposit_request_date + 10 years` when no `closure_date` is set, purely so a period
+  object always exists for downstream code; exempt institutions always show `required_paise=0`
+  regardless of this period.
 
 ## Known gaps
 (updated as phases proceed)
