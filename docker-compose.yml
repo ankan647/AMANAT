@@ -1,0 +1,25 @@
+services:
+  backend:
+    build: ./backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DEMO_MODE=true
+      - JWT_SECRET=change-me-demo-only
+      - DATABASE_URL=sqlite:////data/amanat.db
+      - ANCHOR_DB_PATH=/data/anchor_store.db
+      - STORAGE_DIR=/data/files
+      - SIGNING_KEY_PATH=/data/demo_ed25519.pem
+      - CORS_ORIGINS=http://localhost:5173
+    volumes:
+      - amanat-data:/data
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:80"
+    depends_on:
+      - backend
+
+volumes:
+  amanat-data:

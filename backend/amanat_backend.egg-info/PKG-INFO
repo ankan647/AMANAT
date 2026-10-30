@@ -1,0 +1,24 @@
+Metadata-Version: 2.4
+Name: amanat-backend
+Version: 0.1.0
+Summary: AMANAT - AICTE security deposit / FDR portal backend
+Requires-Python: >=3.11
+Requires-Dist: fastapi<0.116,>=0.115
+Requires-Dist: uvicorn[standard]<0.33,>=0.32
+Requires-Dist: sqlalchemy<2.1,>=2.0
+Requires-Dist: alembic<1.14,>=1.13
+Requires-Dist: pydantic<2.10,>=2.9
+Requires-Dist: pydantic-settings<2.7,>=2.6
+Requires-Dist: pyjwt<2.10,>=2.9
+Requires-Dist: bcrypt<4.3,>=4.2
+Requires-Dist: python-multipart>=0.0.12
+Requires-Dist: cryptography<44.0,>=43.0
+Requires-Dist: qrcode[pil]<8.1,>=8.0
+Requires-Dist: reportlab<4.3,>=4.2
+Requires-Dist: pymupdf<1.25,>=1.24
+Requires-Dist: apscheduler<3.11,>=3.10
+Provides-Extra: dev
+Requires-Dist: pytest<8.4,>=8.3; extra == "dev"
+Requires-Dist: pytest-asyncio<0.25,>=0.24; extra == "dev"
+Requires-Dist: httpx<0.28,>=0.27; extra == "dev"
+Requires-Dist: ruff<0.8,>=0.7; extra == "dev"
