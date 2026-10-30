@@ -177,6 +177,21 @@ def run_precheck(
     )
 
 
+def _block_sod(db: Session, *, approver_id: int, approver_role: str, release_request_id: int, rule: str, message: str) -> None:
+    from app.core import audit
+
+    audit.record(
+        db,
+        actor_id=approver_id,
+        actor_role=approver_role,
+        action="sod_violation_blocked",
+        entity_type="release_request",
+        entity_id=release_request_id,
+        details={"rule": rule},
+    )
+    raise SodViolationError(message, rule=rule)
+
+
 def enforce_sod_for_approval(
     db: Session,
     *,
@@ -187,15 +202,17 @@ def enforce_sod_for_approval(
     level: int,
 ) -> None:
     if approver_role == "admin":
-        raise SodViolationError(
-            "Admins cannot approve or edit case records.", rule="admin_cannot_approve"
+        _block_sod(
+            db, approver_id=approver_id, approver_role=approver_role, release_request_id=release_request.id,
+            rule="admin_cannot_approve", message="Admins cannot approve or edit case records.",
         )
 
     scrutiniser_id = scrutiniser_for(db, instrument_id)
     if scrutiniser_id is not None and approver_id == scrutiniser_id:
-        raise SodViolationError(
-            "You scrutinised this FDR, so you cannot approve its release.",
+        _block_sod(
+            db, approver_id=approver_id, approver_role=approver_role, release_request_id=release_request.id,
             rule="scrutiniser_cannot_approve",
+            message="You scrutinised this FDR, so you cannot approve its release.",
         )
 
     if level == 2:
@@ -205,7 +222,8 @@ def enforce_sod_for_approval(
             .first()
         )
         if existing is not None and existing.approver_id == approver_id:
-            raise SodViolationError(
-                "The level-2 approver must be different from the level-1 approver.",
+            _block_sod(
+                db, approver_id=approver_id, approver_role=approver_role, release_request_id=release_request.id,
                 rule="second_approver_must_differ",
+                message="The level-2 approver must be different from the level-1 approver.",
             )

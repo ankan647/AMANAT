@@ -48,3 +48,15 @@ def anchor_db():
         yield session
     finally:
         session.close()
+
+
+@pytest.fixture(scope="module")
+def seeded_client():
+    from fastapi.testclient import TestClient
+
+    from app.main import app
+    from app.seed import run_seed
+
+    run_seed(reset=True)
+    with TestClient(app) as c:
+        yield c

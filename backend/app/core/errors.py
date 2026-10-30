@@ -53,6 +53,16 @@ class InvalidStateError(ApiError):
         super().__init__("INVALID_STATE", message, status.HTTP_409_CONFLICT, details)
 
 
+class ValidationFieldsError(ApiError):
+    def __init__(self, fields: list[dict[str, str]]) -> None:
+        super().__init__(
+            "VALIDATION_ERROR",
+            "Validation failed.",
+            status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details={"fields": fields},
+        )
+
+
 class RateLimitedError(ApiError):
     def __init__(self, message: str = "Too many requests.") -> None:
         super().__init__("RATE_LIMITED", message, status.HTTP_429_TOO_MANY_REQUESTS)

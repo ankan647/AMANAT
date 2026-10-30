@@ -20,7 +20,17 @@
       (valid signature verifies, tampered payload fails, masked instrument ref, public-payload
       key allowlist), metrics (precision/recall/officer-confirmed-share on a hand-built planted
       set). `ruff check app tests` clean.
-- [ ] Phase 3: Seed + API + contract
+- [x] Phase 3: Seed + API + contract — `pytest tests/api tests/scenarios tests/contract` 29 passed
+      (117 total incl. phases 1-2); `ruff check app tests` clean; `scripts/smoke.sh` all green
+      against a live server; full manual lifecycle verified end to end (lodge -> bank request ->
+      bank respond -> accept -> confidence rises 0% to 91% -> raise release -> approver approves
+      -> signed order created -> public /verify shows VALID with signature_valid:true -> tamper
+      box shows signature_valid:false for an edited payload -> auditor /audit/verify ok -> dev
+      tamper detected (first_broken_seq set) -> dev restore returns ok). All 14 demo scenarios
+      (A-K, R1-R3) match their spec-7.1 expected values exactly (gap_days 41 and 57 confirmed).
+      Anomaly metrics on planted data: overall recall 1.0, precision 0.91 (see Deviations for the
+      one expected precision/recall overlap). `docs/openapi.json` + `frontend/src/api/schema.d.ts`
+      generated; typed `openapi-fetch` client created.
 - [ ] Phase 4: Frontend foundation
 - [ ] Phase 5: Frontend screens
 - [ ] Phase 6: Dynamic polish and QA
@@ -63,5 +73,35 @@
   object always exists for downstream code; exempt institutions always show `required_paise=0`
   regardless of this period.
 
+- Most API endpoints return a plain JSON object shaped exactly as documented in
+  `AMANAT_SPEC.md` section 8.2 rather than one dedicated Pydantic response model per endpoint
+  (request bodies are still validated). This sped up building ~70 endpoints at prototype pace;
+  `docs/openapi.json` therefore carries a looser response schema for those routes than a fully
+  typed contract would. See `docs/api-contract.md` "Known deviation". The frontend still goes
+  through the generated `openapi-fetch` client exclusively — never raw `fetch`/`axios` — and uses
+  local TypeScript interfaces at call sites instead of `any` where the generated schema is loose.
+- Seed data creates more institutions (~39) than the illustrative "24" in spec section 7: the 17
+  named scenario institutions (A, B, C1/C2, D, E1/E2, F, G1/G2, H, I, J, K, R1/R2/R3) plus one
+  institution per planted-anomaly instance and per clean-control group, so that "other valid
+  instruments under the same institution" never accidentally closes a deliberately-planted
+  coverage/amount gap. Section 7's own numbers don't add up either (17 named scenarios + "~12
+  filler" ≠ 24), so this prioritises correctness of the planted-anomaly recall measurement over
+  hitting the exact illustrative headcount.
+- `term_too_short` has 2 "false positives" in the anomaly metrics by design, not by bug: the two
+  `maturity_before_issue`-planted instruments (negative term) also legitimately trigger
+  `term_too_short` (a negative term is certainly shorter than the required minimum). Both checks
+  independently and correctly fire on the same instrument; this lowers that type's measured
+  precision to 0.5 while every type's recall is still 1.0 and overall recall is 1.0.
+- JWT session expiry correctly uses real wall-clock time, not the simulated clock (see Phase 1
+  deviation above) — tested in `tests/core/test_auth.py`.
+- Release pre-check term-completion is computed with a fixed `term_years=10` (every seed rule
+  version happens to use `term_years=10`) rather than re-deriving it from the institution's
+  applicable rule version on every call; `rules_engine.evaluate_required_deposit(...).term_years`
+  is available if a future rule version ever uses a different term.
+
 ## Known gaps
-(updated as phases proceed)
+- Pydantic schema modules under `app/schemas/` are minimal (just the envelope generics) rather
+  than one fully-typed module per domain as sketched in the repo layout — see the response-model
+  deviation above.
+- P1 items (SSE live events, CSV exports, PDF report endpoints beyond the order PDF, deeper
+  dark-mode polish) are deferred to/after Phase 6 per the spec's own priority order.

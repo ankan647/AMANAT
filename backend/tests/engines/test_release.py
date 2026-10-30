@@ -129,7 +129,7 @@ def _setup(db, code, scrutiniser_id, amount_paise=40_00_000_00, with_docs=True, 
 
 
 def test_r1_precheck_eligible_single_approver(db):
-    inst, instrument, rr = _setup(db, "DEMO-R1", scrutiniser_id=1001)
+    inst, instrument, rr = _setup(db, "UNIT-R1", scrutiniser_id=1001)
     result = release.run_precheck(
         db, institution=inst, instrument=instrument, term_years=10, exempt=False, on_date=date(2026, 10, 30)
     )
@@ -137,7 +137,7 @@ def test_r1_precheck_eligible_single_approver(db):
 
 
 def test_r3_scrutiniser_cannot_approve(db):
-    inst, instrument, rr = _setup(db, "DEMO-R3", scrutiniser_id=2001)
+    inst, instrument, rr = _setup(db, "UNIT-R3", scrutiniser_id=2001)
     with pytest.raises(SodViolationError) as exc_info:
         release.enforce_sod_for_approval(
             db,
@@ -151,7 +151,7 @@ def test_r3_scrutiniser_cannot_approve(db):
 
 
 def test_different_approver_passes_sod(db):
-    inst, instrument, rr = _setup(db, "DEMO-R1B", scrutiniser_id=3001)
+    inst, instrument, rr = _setup(db, "UNIT-R1B", scrutiniser_id=3001)
     _ensure_user(db, 4001)
     release.enforce_sod_for_approval(
         db,
@@ -164,7 +164,7 @@ def test_different_approver_passes_sod(db):
 
 
 def test_r2_second_approver_must_differ(db):
-    inst, instrument, rr = _setup(db, "DEMO-R2", scrutiniser_id=5001)
+    inst, instrument, rr = _setup(db, "UNIT-R2", scrutiniser_id=5001)
     _ensure_user(db, 6001)
     db.add(
         Approval(
@@ -189,7 +189,7 @@ def test_r2_second_approver_must_differ(db):
 
 
 def test_admin_cannot_approve(db):
-    inst, instrument, rr = _setup(db, "DEMO-ADMIN", scrutiniser_id=7001)
+    inst, instrument, rr = _setup(db, "UNIT-ADMIN", scrutiniser_id=7001)
     _ensure_user(db, 8001, role="admin")
     with pytest.raises(SodViolationError) as exc_info:
         release.enforce_sod_for_approval(
@@ -204,7 +204,7 @@ def test_admin_cannot_approve(db):
 
 
 def test_f_release_blocked_by_open_hold(db):
-    inst, instrument, rr = _setup(db, "DEMO-F", scrutiniser_id=9001, with_hold=True)
+    inst, instrument, rr = _setup(db, "UNIT-F", scrutiniser_id=9001, with_hold=True)
     result = release.run_precheck(
         db, institution=inst, instrument=instrument, term_years=10, exempt=False, on_date=date(2026, 10, 30)
     )
@@ -213,7 +213,7 @@ def test_f_release_blocked_by_open_hold(db):
 
 
 def test_blocked_when_term_not_complete(db):
-    inst, instrument, rr = _setup(db, "DEMO-EARLY", scrutiniser_id=10001)
+    inst, instrument, rr = _setup(db, "UNIT-EARLY", scrutiniser_id=10001)
     result = release.run_precheck(
         db, institution=inst, instrument=instrument, term_years=10, exempt=False, on_date=date(2020, 1, 1)
     )
@@ -221,7 +221,7 @@ def test_blocked_when_term_not_complete(db):
 
 
 def test_blocked_when_documents_missing(db):
-    inst, instrument, rr = _setup(db, "DEMO-NODOCS", scrutiniser_id=11001, with_docs=False)
+    inst, instrument, rr = _setup(db, "UNIT-NODOCS", scrutiniser_id=11001, with_docs=False)
     result = release.run_precheck(
         db, institution=inst, instrument=instrument, term_years=10, exempt=False, on_date=date(2026, 10, 30)
     )

@@ -70,7 +70,7 @@ def _seed_rules(db):
 
 def _make_institution(**overrides):
     base = dict(
-        code="DEMO-TEST",
+        code="UNIT-TEST",
         name="Test College",
         state="Test State",
         category="Technology",
@@ -88,8 +88,8 @@ def _make_institution(**overrides):
 
 def test_e1_vs_e2_different_versions_by_obligation_date(db):
     _seed_rules(db)
-    e1 = _make_institution(code="DEMO-E1", deposit_request_date=date(2018, 5, 1))
-    e2 = _make_institution(code="DEMO-E2", deposit_request_date=date(2022, 5, 1))
+    e1 = _make_institution(code="UNIT-E1", deposit_request_date=date(2018, 5, 1))
+    e2 = _make_institution(code="UNIT-E2", deposit_request_date=date(2022, 5, 1))
     db.add_all([e1, e2])
     db.commit()
 
@@ -104,7 +104,7 @@ def test_e1_vs_e2_different_versions_by_obligation_date(db):
 
 def test_exemption_by_years_existing_elsewhere(db):
     _seed_rules(db)
-    inst = _make_institution(code="DEMO-I", years_existing_elsewhere=14)
+    inst = _make_institution(code="UNIT-I", years_existing_elsewhere=14)
     db.add(inst)
     db.commit()
 
@@ -116,7 +116,7 @@ def test_exemption_by_years_existing_elsewhere(db):
 
 def test_not_exempt_when_years_below_threshold(db):
     _seed_rules(db)
-    inst = _make_institution(code="DEMO-NOTEXEMPT", years_existing_elsewhere=3)
+    inst = _make_institution(code="UNIT-NOTEXEMPT", years_existing_elsewhere=3)
     db.add(inst)
     db.commit()
 
@@ -127,7 +127,7 @@ def test_not_exempt_when_years_below_threshold(db):
 def test_required_period_ends_at_closure_date(db):
     _seed_rules(db)
     inst = _make_institution(
-        code="DEMO-CLOSED",
+        code="UNIT-CLOSED",
         deposit_request_date=date(2015, 6, 1),
         closure_date=date(2025, 6, 1),
     )
@@ -139,7 +139,7 @@ def test_required_period_ends_at_closure_date(db):
 
 def test_impact_preview_recomputes_without_persisting(db):
     _seed_rules(db)
-    inst = _make_institution(code="DEMO-PREVIEW")
+    inst = _make_institution(code="UNIT-PREVIEW")
     db.add(inst)
     db.commit()
 
