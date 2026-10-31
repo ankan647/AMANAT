@@ -1,10 +1,30 @@
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { BrowserRouter } from "react-router-dom";
+import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/lib/AuthContext";
+import { ThemeProvider } from "@/lib/ThemeContext";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { AppRoutes } from "@/routes";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: { retry: 1, staleTime: 10_000 },
+  },
+});
+
 export default function App() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
-      <div className="text-center">
-        <h1 className="text-2xl font-semibold tracking-tight">Amanat</h1>
-        <p className="text-muted-foreground">Scaffold booting — screens arrive in later phases.</p>
-      </div>
-    </div>
+    <ThemeProvider>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <TooltipProvider>
+            <BrowserRouter>
+              <AppRoutes />
+            </BrowserRouter>
+            <Toaster richColors position="top-right" />
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }

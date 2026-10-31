@@ -26,6 +26,22 @@
     --radius: 0.75rem;
 
     --brand-gradient: linear-gradient(135deg, #1e1b4b 0%, #3730a3 45%, #0d9488 100%);
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   .dark {
@@ -48,6 +64,14 @@
     --border: 222 30% 20%;
     --input: 222 30% 20%;
     --ring: 243 75% 60%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
   * {
@@ -65,4 +89,19 @@
 
 .tabular-nums {
   font-variant-numeric: tabular-nums;
+}
+
+.border-gradient {
+  position: relative;
+  border: 1px solid transparent;
+  background-clip: padding-box;
+}
+.border-gradient::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  margin: -1px;
+  border-radius: inherit;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.3), rgba(20, 184, 166, 0.3), transparent);
 }

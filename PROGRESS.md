@@ -31,10 +31,23 @@
       Anomaly metrics on planted data: overall recall 1.0, precision 0.91 (see Deviations for the
       one expected precision/recall overlap). `docs/openapi.json` + `frontend/src/api/schema.d.ts`
       generated; typed `openapi-fetch` client created.
-- [ ] Phase 4: Frontend foundation
-- [ ] Phase 5: Frontend screens
-- [ ] Phase 6: Dynamic polish and QA
-- [ ] Phase 7: E2E, packaging, docs
+- [x] Phase 4: Frontend foundation — Vite+Tailwind+shadcn (32 components), gradient tokens (9.2),
+      AppShell/BankShell/PublicShell, auth context + role routing, generated client + typed
+      `apiGet`/`apiPost`/`apiPostForm`/`apiGetBlob` wrappers (never raw fetch), 13 hook files, all
+      composites (StatCard, CoverageBadge, GradeBadge, ConfidenceBar, MoneyText, EmptyState,
+      PageHeader, RoleGate, SimulatedBadge, ExplainDrawer, PriorityMatrix, ClockControl,
+      NotificationBell, ActivityFeed, CoverageTimelineChart) plus DataTable/StatusChip reused
+      everywhere. `npm run typecheck`, `npx eslint src`, `npm run build` all clean.
+- [x] Phase 5: Frontend screens — all 15 screens built (Login, Dashboard, InstitutionDetail,
+      InstrumentDetail, Queue, BankPortal, BankRequests, Flags+FlagDetail, Rules, Reminders,
+      Releases+ReleaseDetail, Verify, Audit, Metrics, Demo), with the dynamic behaviour (count-up
+      KPIs, animated confidence bar, staggered cards, ClockControl toast+bell bounce, optimistic
+      sonner toasts, skeleton/empty/error states, RoleGate disabled-with-tooltip) built in rather
+      than deferred. Manual Playwright lifecycle smoke (login -> dashboard -> advance clock ->
+      bank portal -> public verify) passed with zero console/page errors against live servers.
+      Per explicit user instruction this session, Phase 6 (screenshot QA, a11y audit, extra
+      dark-mode/animation passes) and Phase 7 (Playwright e2e suite, vitest, Docker, full README,
+      CSV/PDF/SSE/command-palette P1 items) were skipped entirely and are not attempted.
 
 ## Deviations
 - Python 3.12 not available on this machine; using Python 3.11 via `py -3.11` as documented fallback
